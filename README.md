@@ -3,7 +3,7 @@
 連写した写真・動画から「これはいらないかも」を自動で選ぶ、iPhone 向けの Web アプリです。
 写真はスマホの中だけで処理し、どこにも送信しません。
 
-**使う:** https://amanosaaan.github.io/best-shot-picker/
+**使う:** https://mizuho-works.github.io/best-shot-picker/
 
 ## 使い方
 
