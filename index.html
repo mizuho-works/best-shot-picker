@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ベストショット整理</title>
+  <meta name="description" content="連写した写真・動画から「いらないかも」を自動で選ぶ。写真は端末の外に送信しません。">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#111113" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="ベストショット">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="icon" href="icon-180.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="appbar">
+    <h1>ベストショット整理</h1>
+    <button id="btn-home" class="icon-btn" hidden aria-label="最初の画面へ">⌂</button>
+  </header>
+
+  <!-- 1. スタート -->
+  <section id="screen-start" class="screen">
+    <div id="resume" class="card resume" hidden></div>
+
+    <div class="hero">
+      <p class="lead">連写した写真・動画から<br><b>「これはいらないかも」</b>を自動で選びます。</p>
+      <label class="primary big pick">
+        <input id="file-input" type="file" accept="image/*,video/*" multiple hidden>
+        写真・動画を選ぶ
+      </label>
+      <p class="privacy">🔒 写真はこのスマホの中だけで処理します。どこにも送信しません。</p>
+    </div>
+
+    <div class="card">
+      <h2>選び方のコツ</h2>
+      <ul class="tips">
+        <li>「フォトライブラリ」で写真の上を<b>指でなぞる</b>と、まとめて選択できます。</li>
+        <li>1回に <b>100〜300枚</b> くらいが快適です（日付ごとなど）。</li>
+        <li>読み込み中は画面を閉じずにお待ちください。</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>判定の設定</h2>
+      <div id="settings-start"></div>
+    </div>
+  </section>
+
+  <!-- 2. 解析中 -->
+  <section id="screen-progress" class="screen" hidden>
+    <div class="progress-wrap">
+      <img id="prog-thumb" alt="">
+      <p id="prog-text">準備中…</p>
+      <div class="bar"><i id="prog-bar"></i></div>
+      <p id="prog-sub" class="muted"></p>
+      <button id="btn-cancel" class="ghost">中止して結果を見る</button>
+    </div>
+  </section>
+
+  <!-- 3. 確認 -->
+  <section id="screen-review" class="screen" hidden>
+    <div class="summary">
+      <div><b id="sum-del">0</b> 件が削除候補 <span id="sum-size" class="muted"></span></div>
+      <p class="muted small">✓=残す ✕=削除候補。右下の丸ボタンで切替、写真をタップで拡大。</p>
+    </div>
+    <details class="card settings-inline">
+      <summary>判定の設定を変える</summary>
+      <div id="settings-review"></div>
+      <p class="muted small">変更すると、手動で切り替えた内容はリセットされます。</p>
+    </details>
+    <div id="group-list"></div>
+    <div class="bottom-bar">
+      <button id="btn-finish" class="primary">削除の手順へ進む →</button>
+    </div>
+  </section>
+
+  <!-- 4. 削除の手順 -->
+  <section id="screen-finish" class="screen" hidden>
+    <div class="card how">
+      <h2>写真アプリで削除しよう</h2>
+      <p>iPhoneの仕組み上、ブラウザから写真を直接消すことはできません。この一覧を見ながら写真アプリで消してください。</p>
+      <ol>
+        <li>写真アプリで右上の<b>「選択」</b></li>
+        <li>下の一覧と<b>同じ時刻</b>のあたりで、<b class="del-mark">✕</b> の写真をタップ</li>
+        <li>🗑 で削除 → ここに戻って「削除した」をタップ</li>
+      </ol>
+      <p class="muted small">この画面の状態は自動で保存されます。アプリを行き来しても大丈夫。<br>消した写真は「最近削除した項目」に30日間残ります。</p>
+    </div>
+    <div class="finish-progress">
+      <div class="bar"><i id="fin-bar"></i></div>
+      <p id="fin-text"></p>
+    </div>
+    <div id="finish-list"></div>
+    <div class="finish-actions">
+      <button id="btn-back-review" class="ghost">← 選び直す</button>
+      <button id="btn-new" class="ghost">新しく整理する</button>
+    </div>
+  </section>
+
+  <!-- 拡大表示 -->
+  <div id="viewer" class="viewer" hidden>
+    <div class="v-top">
+      <button id="v-close" class="icon-btn" aria-label="閉じる">✕</button>
+      <span id="v-pos"></span>
+      <span id="v-time" class="muted"></span>
+    </div>
+    <div class="v-stage" id="v-stage">
+      <img id="v-img" alt="">
+      <video id="v-video" controls playsinline hidden></video>
+    </div>
+    <div class="v-info" id="v-info"></div>
+    <div class="v-actions">
+      <button id="v-prev" class="icon-btn big" aria-label="前へ">‹</button>
+      <button id="v-toggle" class="toggle-big"></button>
+      <button id="v-next" class="icon-btn big" aria-label="次へ">›</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
